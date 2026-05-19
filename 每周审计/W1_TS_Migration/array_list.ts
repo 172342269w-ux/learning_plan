@@ -57,7 +57,7 @@ public removeAt(index: number): number {
     // 3. 数据搬移：请手敲数据向前覆盖的逻辑
     // 提示：从 index 开始，把后面的元素往前挪一位（this.data[i] = this.data[i+1]）
     // 【请在这里手敲你的搬移循环逻辑】
-    for(let i=index-1;i<this.size-1;i++){
+    for(let i=index;i<this.size-1;i++){
         this.data[i]=this.data[i+1];
     }
 
@@ -77,7 +77,7 @@ public removeAt(index: number): number {
  */
 public find(element: number): number {
     // 【请手敲：利用 for 循环遍历 data，找到相等的值就返回下标，遍历完没找到返回 -1】
-      for(let i=0;i<this.size-1;i++){
+      for(let i=0;i<this.size;i++){
         if(this.data[i]===element){
             return i;
         }
