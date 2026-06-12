@@ -37,7 +37,7 @@ def main() -> None:
 
     print()
     print("4. list and loop")
-    tasks = ["learn print", "learn variables", "learn if", "learn function"]
+    tasks = ["learn print", "learn variables", "learn if", "learn function","learn list"]
     for task in tasks:
         print("- TODO:", task)
 

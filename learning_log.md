@@ -20,6 +20,6 @@ Today's target:
 
 Notes:
 
-- What I tried:
-- What failed:
-- What I understood after fixing it:
+- What I tried:我理解了 if is_adult(age): 的意思：把变量 age 作为实参传给 is_adult 函数，函数判断 age 是否大于等于 18。如果返回 True，就输出成年提示；如果返回 False，就输出未成年提示。
+- What failed:暂时没有报错。
+- What I understood after fixing it: list 里多一个元素，for 循环就会多打印一行。
