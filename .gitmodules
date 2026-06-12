@@ -1,0 +1,6 @@
+[submodule "TS学习"]
+	path = TS学习
+	url = https://github.com/172342269w-ux/TS--.git
+[submodule "数据结构"]
+	path = 数据结构
+	url = https://github.com/172342269w-ux/dsa.git

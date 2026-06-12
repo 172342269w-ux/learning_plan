@@ -1,0 +1,4 @@
+*.exe
+草稿箱/
+.vscode/
+.claude/
