@@ -1,4 +1,8 @@
 *.exe
+__pycache__/
+*.pyc
+.venv/
+.env
 草稿箱/
 .vscode/
 .claude/

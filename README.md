@@ -48,9 +48,8 @@ python .\scripts\python_basics_day0.py
 - `scripts/python_basics_day0.py`：今天的 Python 第 0 天练习。
 - `scripts/site_probe.py`：后续 HTTP 检测练习。
 - `scripts/cert_days_left.py`：后续证书到期检测练习。
-- `TS学习`：旧计划中的 TS 学习子模块，保留为历史资料。
 - `数据结构`：旧计划中的数据结构子模块，保留为 C++ 副线资料。
-- `每周审计`：旧计划中的 AI 协同审计记录，保留参考。
+- `docs/github-upload.md`：以后上传 GitHub 的固定流程。
 
 ## 主线
 
@@ -83,6 +82,15 @@ python .\scripts\python_basics_day0.py
 
 副线不能抢走主线时间。
 
+## 已清理的旧计划内容
+
+这些内容已经从当前执行仓库中移除：
+
+- `TS学习` 子模块：TypeScript 迁移不再是 2026 暑假主线。
+- `每周审计/W1_TS_Migration`：旧 TS 迁移审计记录，和当前 Python 主线不再匹配。
+
+旧内容没有丢失，仍然可以从 Git 历史里找回。
+
 ## 暂时不做
 
 2026 暑假暂时不要把这些放进主线：
@@ -105,4 +113,3 @@ python .\scripts\python_basics_day0.py
 - AI 当陪练，不当替身。
 - 数据库模型、核心检测逻辑、认证逻辑要先自己写一版。
 - 每周复盘：本周写了什么、卡在哪里、下周只推进哪 1-2 件关键事。
-
