@@ -114,3 +114,20 @@ Notes:
 - What I tried: 我运行了 `python .\scripts\hello_cli.py lenxuan`，也运行了不带名字的命令，观察两种输出。
 - What failed: 一开始不理解为什么 `len(sys.argv) != 2` 不能改成判断 0，也不理解 `name = sys.argv[1]` 是什么意思。
 - What I understood after fixing it: `sys.argv` 是 Python 接收命令行参数的列表，里面至少包含脚本文件名。`sys.argv[0]` 是脚本名，`sys.argv[1]` 是命令后面输入的第一个真正有用的参数，比如 `lenxuan`。`len(sys.argv) != 2` 是为了保证输入刚好是“脚本名 + 一个名字”。
+
+## 2026-06-15
+
+Stage: Week 1 - Day 6-7 review.
+
+Today's target:
+
+- [x] Run Day 0 to Day 5 scripts again.
+- [x] Review what each script taught me.
+- [x] Connect Week 1 basics to `site_probe.py`.
+- [x] Decide not to start `cert_days_left.py` yet.
+
+Notes:
+
+- What I tried: 我重新运行了 Day 0 到 Day 5 的所有脚本，并检查了 `site_probe.py` 和 `cert_days_left.py` 的 TODO。
+- What failed: 暂时没有报错，但 `site_probe.py` 和 `cert_days_left.py` 还没有实现。
+- What I understood after fixing it: Week 1 学到的 `sys.argv`、函数、`return`、`if`、列表和循环，已经足够开始实现 `site_probe.py`。证书检测涉及 SSL 和日期，暂时先不碰。
