@@ -138,15 +138,15 @@ Stage: First real tool - `site_probe.py`.
 
 Today's target:
 
-- [x] Implement `probe_url(url)`.
+- [ ] Implement `probe_url(url)` by myself.
 - [x] Read URL from `sys.argv[1]`.
-- [x] Return HTTP status code from the function.
-- [x] Print `OK` for 2xx/3xx status codes.
-- [x] Print `WARN` for 4xx/5xx status codes.
-- [x] Record HTTPS certificate verification issue.
+- [ ] Return HTTP status code from the function.
+- [ ] Print `OK` for 2xx/3xx status codes.
+- [ ] Print `WARN` for 4xx/5xx status codes.
+- [ ] Record what I tried before asking AI to review.
 
 Notes:
 
-- What I tried: 我实现了 `probe_url(url)`，用 `urllib.request.urlopen(url, timeout=5)` 打开 URL，并返回 HTTP 状态码。
-- What failed: 一开始 404 会被 `urllib` 当成 `HTTPError` 异常处理，导致脚本输出 `FAIL`；另外当前 Python 环境访问部分 HTTPS 网站会出现证书校验失败。
-- What I understood after fixing it: `HTTPError` 里面也有状态码，所以可以在 `probe_url` 里捕获它并返回 `exc.code`。这样 404 会交给后面的 `if` 判断，输出 `WARN`。HTTPS 证书问题先记录为环境问题，不阻塞第一版 HTTP 检测工具。
+- What I tried: 发现上一版 `site_probe.py` 不是我自己独立写出来的，所以不把它算作掌握成果。
+- What failed: 当前 `probe_url(url)` 已恢复为 TODO，需要我自己先写第一版。
+- What I understood after fixing it: 真实掌握必须能自己写出核心函数，并能解释 `urlopen`、`return`、`HTTPError` 和后面的 `if` 判断。

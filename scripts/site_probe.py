@@ -16,14 +16,15 @@ import urllib.request
 def probe_url(url: str) -> int:
     """Return the HTTP status code for url.
 
-    urllib.request.urlopen opens the URL and gives us a response object.
-    response.status is the HTTP status code, such as 200, 404, or 500.
+    TODO(lenxuan): implement this yourself.
+
+    Hints:
+    - Use urllib.request.urlopen(url, timeout=5)
+    - The response object has a .status value
+    - HTTP 404 may raise urllib.error.HTTPError
+    - HTTPError has a .code value
     """
-    try:
-        with urllib.request.urlopen(url, timeout=5) as response:
-            return response.status
-    except urllib.error.HTTPError as exc:
-        return exc.code
+    raise NotImplementedError("Implement probe_url yourself")
 
 
 def main() -> int:

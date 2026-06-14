@@ -40,11 +40,8 @@
 
 ## 下一步进展
 
-`scripts/site_probe.py` 已经完成第一版：
+`scripts/site_probe.py` 暂时不算完成。上一版核心函数不是自己独立写出的，所以已经恢复为 TODO。
 
-- `http://example.com` 返回 `OK` 和状态码 `200`。
-- `http://example.com/not-found` 返回 `WARN` 和状态码 `404`。
-- 不传 URL 时会提示正确用法。
-- 当前 Windows/Python 环境访问部分 HTTPS 网站会遇到本机证书校验问题，这属于环境问题，先记录，不阻塞 HTTP 状态码练习。
+下一次要先自己实现 `probe_url(url)`，再让 AI 做 review。
 
 暂时不要开始 `cert_days_left.py`。证书检测会涉及 SSL 和日期处理，等 `site_probe.py` 真正理解并跑通后再做。
