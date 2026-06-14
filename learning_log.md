@@ -131,3 +131,22 @@ Notes:
 - What I tried: 我重新运行了 Day 0 到 Day 5 的所有脚本，并检查了 `site_probe.py` 和 `cert_days_left.py` 的 TODO。
 - What failed: 暂时没有报错，但 `site_probe.py` 和 `cert_days_left.py` 还没有实现。
 - What I understood after fixing it: Week 1 学到的 `sys.argv`、函数、`return`、`if`、列表和循环，已经足够开始实现 `site_probe.py`。证书检测涉及 SSL 和日期，暂时先不碰。
+
+## 2026-06-15
+
+Stage: First real tool - `site_probe.py`.
+
+Today's target:
+
+- [x] Implement `probe_url(url)`.
+- [x] Read URL from `sys.argv[1]`.
+- [x] Return HTTP status code from the function.
+- [x] Print `OK` for 2xx/3xx status codes.
+- [x] Print `WARN` for 4xx/5xx status codes.
+- [x] Record HTTPS certificate verification issue.
+
+Notes:
+
+- What I tried: 我实现了 `probe_url(url)`，用 `urllib.request.urlopen(url, timeout=5)` 打开 URL，并返回 HTTP 状态码。
+- What failed: 一开始 404 会被 `urllib` 当成 `HTTPError` 异常处理，导致脚本输出 `FAIL`；另外当前 Python 环境访问部分 HTTPS 网站会出现证书校验失败。
+- What I understood after fixing it: `HTTPError` 里面也有状态码，所以可以在 `probe_url` 里捕获它并返回 `exc.code`。这样 404 会交给后面的 `if` 判断，输出 `WARN`。HTTPS 证书问题先记录为环境问题，不阻塞第一版 HTTP 检测工具。

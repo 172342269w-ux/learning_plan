@@ -16,18 +16,19 @@ import urllib.request
 def probe_url(url: str) -> int:
     """Return the HTTP status code for url.
 
-    TODO(lenxuan): Implement this yourself.
-    Hints:
-    - Use urllib.request.urlopen(url, timeout=...)
-    - Return response.status
-    - Convert urllib.error.URLError into a readable failure message
+    urllib.request.urlopen opens the URL and gives us a response object.
+    response.status is the HTTP status code, such as 200, 404, or 500.
     """
-    raise NotImplementedError("Implement probe_url first")
+    try:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            return response.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
 
 
 def main() -> int:
     if len(sys.argv) != 2:
-        print("Usage: python scripts/site_probe.py https://example.com")
+        print("Usage: python scripts/site_probe.py http://example.com")
         return 2
 
     url = sys.argv[1]
