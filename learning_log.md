@@ -97,3 +97,20 @@ Notes:
 - What I tried: 我修改了 `status_codes` 列表，加入了 `333`、`444`、`555` 和 `111`，然后重新运行 Day 4 脚本，观察每个状态码对应的结果。
 - What failed: 暂时没有报错。
 - What I understood after fixing it: `return` 的作用是把函数算出来的结果返回给调用它的地方使用。这里 `label = get_status_label(code)` 就是在接住函数返回的值。200 到 399 返回 `ok`，400 到 499 返回 `warn`，其他情况返回 `fail`，所以 `111` 会得到 `fail`。
+
+## 2026-06-15
+
+Stage: Week 1 - Python basics, Day 5.
+
+Today's target:
+
+- [x] Run `scripts/hello_cli.py lenxuan`.
+- [x] Try running the script without a name.
+- [x] Explain what `sys.argv` is.
+- [x] Explain what `sys.argv[1]` means.
+
+Notes:
+
+- What I tried: 我运行了 `python .\scripts\hello_cli.py lenxuan`，也运行了不带名字的命令，观察两种输出。
+- What failed: 一开始不理解为什么 `len(sys.argv) != 2` 不能改成判断 0，也不理解 `name = sys.argv[1]` 是什么意思。
+- What I understood after fixing it: `sys.argv` 是 Python 接收命令行参数的列表，里面至少包含脚本文件名。`sys.argv[0]` 是脚本名，`sys.argv[1]` 是命令后面输入的第一个真正有用的参数，比如 `lenxuan`。`len(sys.argv) != 2` 是为了保证输入刚好是“脚本名 + 一个名字”。
