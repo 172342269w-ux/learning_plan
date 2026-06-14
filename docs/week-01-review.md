@@ -1,42 +1,41 @@
-# Week 1 Review
+# 第 1 周复盘
 
-Date: 2026-06-15
+日期：2026-06-15
 
-## Completed
+## 已完成
 
-- Day 0: ran a Python file, changed a list, and observed output changes.
-- Day 1: used variables, strings, numbers, and simple calculations.
-- Day 2: used `if`, `else`, and comparison expressions.
-- Day 3: used lists and `for` loops to print a checklist.
-- Day 4: wrote a function that returns `ok`, `warn`, or `fail`.
-- Day 5: used `sys.argv` to read a command line argument.
+- Day 0：运行 Python 文件，修改列表，并观察输出变化。
+- Day 1：练习变量、字符串、数字和简单计算。
+- Day 2：练习 `if`、`else` 和比较表达式。
+- Day 3：使用列表和 `for` 循环打印任务清单。
+- Day 4：写出一个函数，根据状态码返回 `ok`、`warn` 或 `fail`。
+- Day 5：使用 `sys.argv` 读取命令行参数。
 
-## What I Can Explain Now
+## 现在能解释的内容
 
-- `print(...)` sends text to the terminal.
-- A variable stores a value for later use.
-- `if` runs code only when a condition is true.
-- A list stores multiple values.
-- A `for` loop takes values from a list one by one.
-- A function groups logic under a name.
-- `return` sends a function result back to the caller.
-- `sys.argv[1]` is the first useful command line argument after the script name.
+- `print(...)`：把内容输出到终端。
+- 变量：保存一个值，后面可以继续使用。
+- `if`：当条件为真时执行一段代码。
+- 列表：保存多个值。
+- `for` 循环：从列表里一个一个取出值并执行代码。
+- 函数：把一段逻辑用名字封装起来。
+- `return`：把函数的结果返回给调用它的地方。
+- `sys.argv[1]`：命令行里脚本名后面的第一个真正有用的参数。
 
-## Important Mistakes
+## 重要踩坑
 
-- In Day 3, `"add a new task"` and `"add one new task"` did not match because strings must be exactly the same.
-- In Day 5, `len(sys.argv)` is not 0 when no extra argument is given, because the script name is always included.
+- Day 3 里，`"add a new task"` 和 `"add one new task"` 不匹配，因为字符串必须完全一致。
+- Day 5 里，不额外输入参数时，`len(sys.argv)` 也不是 0，因为脚本名本身也在参数列表里。
 
-## Next Step
+## 下一步
 
-Start `scripts/site_probe.py`.
+开始实现 `scripts/site_probe.py`。
 
-This is the first real tool in the roadmap. It connects the Week 1 basics:
+这是路线图里的第一个真实小工具，会把第 1 周学到的基础串起来：
 
-- `sys.argv`: receive the URL from the command line.
-- function: implement `probe_url(url)`.
-- `return`: return the HTTP status code.
-- `if`: decide whether the site is OK or warning.
+- `sys.argv`：从命令行接收 URL。
+- 函数：实现 `probe_url(url)`。
+- `return`：返回 HTTP 状态码。
+- `if`：判断网站状态是 `OK` 还是 `WARN`。
 
-Do not start `cert_days_left.py` yet. Certificate checking uses SSL and dates, so it should wait until `site_probe.py` is understood.
-
+暂时不要开始 `cert_days_left.py`。证书检测会涉及 SSL 和日期处理，等 `site_probe.py` 真正理解并跑通后再做。
