@@ -43,3 +43,21 @@ Notes:
 - What I understood after fixing it:变量可以保存文字和数字，数字变量可以做加减计算；study_days 改变后，rest_days 会跟着重新计算。
 age + 1 表示用当前年龄加 1，得到明年的年龄。
 days_in_one_week - study_days 表示一周 7 天减去学习天数，得到休息天数。
+
+## 2026-06-14
+
+Stage: Week 1 - Python basics, Day 2.
+
+Today's target:
+
+- [x] Run `scripts/python_basics_day2.py`.
+- [x] Change `score`.
+- [x] Observe both pass and fail outputs.
+- [x] Explain what `>=` means.
+- [x] Explain why the code entered `if` or `else`.
+
+Notes:
+
+- What I tried: 我修改了 score，并运行 Day 2 脚本观察 if 和 else 的输出。
+- What failed: 暂时没有报错。
+- What I understood after fixing it: 如果分数大于等于 60，`score >= pass_line` 返回 True，程序进入 if 分支；如果分数小于 60，则返回 False，程序进入 else 分支。
