@@ -61,3 +61,21 @@ Notes:
 - What I tried: 我修改了 score，并运行 Day 2 脚本观察 if 和 else 的输出。
 - What failed: 暂时没有报错。
 - What I understood after fixing it: 如果分数大于等于 60，`score >= pass_line` 返回 True，程序进入 if 分支；如果分数小于 60，则返回 False，程序进入 else 分支。
+
+## 2026-06-15
+
+Stage: Week 1 - Python basics, Day 3.
+
+Today's target:
+
+- [x] Run `scripts/python_basics_day3.py`.
+- [x] Add one task to `tasks`.
+- [x] Add one completed task to `completed_tasks`.
+- [x] Observe task counts changing.
+- [x] Explain what `for task in tasks:` means.
+
+Notes:
+
+- What I tried: 我给 `tasks` 增加了一个新任务，也给 `completed_tasks` 增加了一个已完成任务，然后重新运行 Day 3 脚本。
+- What failed: `completed_tasks` 里的 `"add a new task"` 和 `tasks` 里的 `"add one new task"` 不完全一样，所以程序没有把它识别成已完成。
+- What I understood after fixing it: `for task in tasks:` 的意思是从 `tasks` 列表里一个一个取出任务，放进变量 `task`，再执行下面缩进的代码。列表里的字符串要完全一样，`if task in completed_tasks:` 才会判断为已完成。修正后，4 个任务里完成了 3 个，还剩 1 个。
