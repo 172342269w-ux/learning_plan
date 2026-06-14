@@ -79,3 +79,21 @@ Notes:
 - What I tried: 我给 `tasks` 增加了一个新任务，也给 `completed_tasks` 增加了一个已完成任务，然后重新运行 Day 3 脚本。
 - What failed: `completed_tasks` 里的 `"add a new task"` 和 `tasks` 里的 `"add one new task"` 不完全一样，所以程序没有把它识别成已完成。
 - What I understood after fixing it: `for task in tasks:` 的意思是从 `tasks` 列表里一个一个取出任务，放进变量 `task`，再执行下面缩进的代码。列表里的字符串要完全一样，`if task in completed_tasks:` 才会判断为已完成。修正后，4 个任务里完成了 3 个，还剩 1 个。
+
+## 2026-06-15
+
+Stage: Week 1 - Python basics, Day 4.
+
+Today's target:
+
+- [x] Run `scripts/python_basics_day4.py`.
+- [x] Change one status code in `status_codes`.
+- [x] Add one more status code.
+- [x] Explain what `return` does.
+- [x] Explain why each status code gets `ok`, `warn`, or `fail`.
+
+Notes:
+
+- What I tried: 我修改了 `status_codes` 列表，加入了 `333`、`444`、`555` 和 `111`，然后重新运行 Day 4 脚本，观察每个状态码对应的结果。
+- What failed: 暂时没有报错。
+- What I understood after fixing it: `return` 的作用是把函数算出来的结果返回给调用它的地方使用。这里 `label = get_status_label(code)` 就是在接住函数返回的值。200 到 399 返回 `ok`，400 到 499 返回 `warn`，其他情况返回 `fail`，所以 `111` 会得到 `fail`。
