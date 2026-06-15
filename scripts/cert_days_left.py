@@ -13,29 +13,39 @@ import datetime as dt
 import socket
 import ssl
 import sys
-
+import tempfile
+import os
 
 def get_cert_expiry(hostname: str, port: int = 443) -> dt.datetime:
-    """Return the certificate expiry datetime for hostname.
+   
+    context = ssl._create_unverified_context()
+   
+    sock=socket.create_connection((hostname,port),timeout=5)
+    tls_sock=context.wrap_socket(sock,server_hostname=hostname)
+   
+    cert_bytes = tls_sock.getpeercert(binary_form=True)
+    cert_pem = ssl.DER_cert_to_PEM_cert(cert_bytes)
 
-    TODO(lenxuan): Implement this yourself.
-    Hints:
-    - Use ssl.create_default_context()
-    - Use socket.create_connection((hostname, port), timeout=...)
-    - Wrap the socket with context.wrap_socket(..., server_hostname=hostname)
-    - Use tls_sock.getpeercert()
-    - Parse cert["notAfter"] with datetime.strptime
-    """
-    raise NotImplementedError("Implement get_cert_expiry first")
+    with tempfile.NamedTemporaryFile("w", delete=False, suffix=".pem") as temp_file:
+     temp_file.write(cert_pem)
+     temp_path = temp_file.name
+
+    cert_info = ssl._ssl._test_decode_cert(temp_path)
+    os.remove(temp_path)
+    not_after = cert_info["notAfter"]
+  
+
+    expiry = dt.datetime.strptime(not_after, "%b %d %H:%M:%S %Y %Z")
+   
+    tls_sock.close()
+    return expiry
+    
 
 
 def days_until(expiry: dt.datetime) -> int:
-    """Return whole days until expiry.
-
-    TODO(lenxuan): Implement this yourself.
-    Hint: compare expiry with datetime.now in UTC or local time consistently.
-    """
-    raise NotImplementedError("Implement days_until first")
+    now=dt.datetime.now()
+    delta=expiry-now
+    return delta.days
 
 
 def main() -> int:
@@ -44,8 +54,12 @@ def main() -> int:
         return 2
 
     hostname = sys.argv[1]
-    expiry = get_cert_expiry(hostname)
-    days_left = days_until(expiry)
+    try:    
+      expiry = get_cert_expiry(hostname)
+      days_left = days_until(expiry)
+    except (socket.error, ssl.SSLError) as exc:
+      print(f"FAIL {hostname} TLS connection error: {exc}")
+      return 1
 
     if days_left < 0:
         print(f"FAIL {hostname} certificate expired {-days_left} days ago")

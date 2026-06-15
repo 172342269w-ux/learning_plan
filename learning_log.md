@@ -150,3 +150,22 @@ Notes:
 - What I tried: 我先用 `print("收到的 url 是:", url)` 和 `return 200` 确认函数真的收到了参数。然后我一步一步加入 `urlopen`、`response.status`，最后再加入 `HTTPError` 处理。
 - What failed: 一开始被缩进卡住，出现了 `IndentationError`。另外如果不处理 `HTTPError`，404 不会走到后面的 `WARN` 判断。
 - What I understood after fixing it: `urlopen` 负责真正访问网站，`response.status` 是真实状态码，`return` 会把状态码交回给 `main()`。404 这种情况会变成 `HTTPError`，但错误对象里也有 `exc.code`，所以仍然可以返回给后面的 `if` 判断。
+
+## 2026-06-15
+
+Stage: First real TLS tool practice - `cert_days_left.py`.
+
+Today's target:
+
+- [x] Rebuild the tool step by step without copying the final file.
+- [x] Read `hostname` from the command line.
+- [x] Connect to port `443`.
+- [x] Upgrade the socket to a TLS connection.
+- [x] Read certificate expiry time and calculate remaining days.
+- [x] Explain the full flow in plain words.
+
+Notes:
+
+- What I tried: 我新建了 `scripts/cert_days_left_rebuild.py`，没有直接照搬最终版，而是从 `sys.argv`、`socket.create_connection`、`wrap_socket`、`getpeercert(binary_form=True)` 一步一步往上搭。最后我把中间调试输出删掉，只保留 `OK ... certificate expires in ... days` 的结果。
+- What failed: 中间我把 `_test_decode_cert` 手误写成了 `_text_decode_cert`，Python 报了 `AttributeError`。另外我一开始还是更像跟着敲，还不能完整手写。
+- What I understood after fixing it: 这个工具的大流程是读取网址名称，连接 `443` 端口，把普通连接变成 TLS 连接，拿到证书内容，读出 `notAfter`，把时间字符串转成 `datetime`，再和当前时间相减得到剩余天数。现在我还不能完全默写，但已经能口头讲清楚主流程，也能在提示下自己把它重新搭出来。
