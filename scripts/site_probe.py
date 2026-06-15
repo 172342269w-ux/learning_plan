@@ -14,18 +14,14 @@ import urllib.request
 
 
 def probe_url(url: str) -> int:
-    """Return the HTTP status code for url.
-
-    TODO(lenxuan): implement this yourself.
-
-    Hints:
-    - Use urllib.request.urlopen(url, timeout=5)
-    - The response object has a .status value
-    - HTTP 404 may raise urllib.error.HTTPError
-    - HTTPError has a .code value
-    """
-    raise NotImplementedError("Implement probe_url yourself")
-
+    print("收到的 url 是:", url)
+    try:
+        response = urllib.request.urlopen(url, timeout=5)
+        print("打开网站后的 response 是:", response)
+        return response.status
+    except urllib.error.HTTPError as exc:
+        print("捕获到 HTTPError，状态码是:", exc.code)
+        return exc.code
 
 def main() -> int:
     if len(sys.argv) != 2:

@@ -138,15 +138,15 @@ Stage: First real tool - `site_probe.py`.
 
 Today's target:
 
-- [ ] Implement `probe_url(url)` by myself.
+- [x] Implement `probe_url(url)` by myself.
 - [x] Read URL from `sys.argv[1]`.
-- [ ] Return HTTP status code from the function.
-- [ ] Print `OK` for 2xx/3xx status codes.
-- [ ] Print `WARN` for 4xx/5xx status codes.
-- [ ] Record what I tried before asking AI to review.
+- [x] Return HTTP status code from the function.
+- [x] Print `OK` for 2xx/3xx status codes.
+- [x] Print `WARN` for 4xx/5xx status codes.
+- [x] Record what I tried before asking AI to review.
 
 Notes:
 
-- What I tried: 发现上一版 `site_probe.py` 不是我自己独立写出来的，所以不把它算作掌握成果。
-- What failed: 当前 `probe_url(url)` 已恢复为 TODO，需要我自己先写第一版。
-- What I understood after fixing it: 真实掌握必须能自己写出核心函数，并能解释 `urlopen`、`return`、`HTTPError` 和后面的 `if` 判断。
+- What I tried: 我先用 `print("收到的 url 是:", url)` 和 `return 200` 确认函数真的收到了参数。然后我一步一步加入 `urlopen`、`response.status`，最后再加入 `HTTPError` 处理。
+- What failed: 一开始被缩进卡住，出现了 `IndentationError`。另外如果不处理 `HTTPError`，404 不会走到后面的 `WARN` 判断。
+- What I understood after fixing it: `urlopen` 负责真正访问网站，`response.status` 是真实状态码，`return` 会把状态码交回给 `main()`。404 这种情况会变成 `HTTPError`，但错误对象里也有 `exc.code`，所以仍然可以返回给后面的 `if` 判断。
