@@ -14,14 +14,12 @@ import urllib.request
 
 
 def probe_url(url: str) -> int:
-    print("收到的 url 是:", url)
     try:
         response = urllib.request.urlopen(url, timeout=5)
-        print("打开网站后的 response 是:", response)
         return response.status
     except urllib.error.HTTPError as exc:
-        print("捕获到 HTTPError，状态码是:", exc.code)
         return exc.code
+
 
 def main() -> int:
     if len(sys.argv) != 2:
