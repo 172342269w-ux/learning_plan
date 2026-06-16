@@ -8,6 +8,8 @@ Week 1 exercise:
 
 from __future__ import annotations
 
+import socket
+import ssl
 import sys
 import urllib.error
 import urllib.request
@@ -30,7 +32,16 @@ def main() -> int:
 
     try:
         status_code = probe_url(url)
+    except (TimeoutError, socket.timeout):
+        print(f"FAIL {url} timed out")
+        return 1
     except urllib.error.URLError as exc:
+        if isinstance(exc.reason, ssl.SSLCertVerificationError):
+            print(f"FAIL {url} SSL verify error: {exc.reason}")
+            return 1
+        if isinstance(exc.reason, (TimeoutError, socket.timeout)):
+            print(f"FAIL {url} timed out")
+            return 1
         print(f"FAIL {url} request error: {exc.reason}")
         return 1
 

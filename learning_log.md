@@ -169,3 +169,21 @@ Notes:
 - What I tried: 我新建了 `scripts/cert_days_left_rebuild.py`，没有直接照搬最终版，而是从 `sys.argv`、`socket.create_connection`、`wrap_socket`、`getpeercert(binary_form=True)` 一步一步往上搭。最后我把中间调试输出删掉，只保留 `OK ... certificate expires in ... days` 的结果。
 - What failed: 中间我把 `_test_decode_cert` 手误写成了 `_text_decode_cert`，Python 报了 `AttributeError`。另外我一开始还是更像跟着敲，还不能完整手写。
 - What I understood after fixing it: 这个工具的大流程是读取网址名称，连接 `443` 端口，把普通连接变成 TLS 连接，拿到证书内容，读出 `notAfter`，把时间字符串转成 `datetime`，再和当前时间相减得到剩余天数。现在我还不能完全默写，但已经能口头讲清楚主流程，也能在提示下自己把它重新搭出来。
+
+## 2026-06-17
+
+Stage: `site_probe.py` exception handling review.
+
+Today's target:
+
+- [x] Re-run `site_probe.py` with HTTP, 404, HTTPS, and timeout cases.
+- [x] Explain `main() -> probe_url() -> urlopen()` in my own words.
+- [x] Add timeout handling.
+- [x] Add SSL certificate verification error handling.
+- [x] Make failure output clean without traceback.
+
+Notes:
+
+- What I tried: 我重新运行了 `site_probe.py`，分别测试了 `http://example.com`、`http://example.com/does-not-exist`、`https://example.com` 和 `http://no-such-host.invalid`，然后根据输出补上了 timeout 和 SSL verify error 的异常处理。
+- What failed: 一开始访问 `http://no-such-host.invalid` 会直接出现 traceback，因为 `TimeoutError` 没有被单独处理。访问 `https://example.com` 时也会因为证书校验失败报错。
+- What I understood after fixing it: `main()` 先检查命令行参数个数是不是 2，也就是脚本名加 1 个 URL。如果不是，就输出正确用法并结束。参数正确时，把 `sys.argv[1]` 赋值给 `url`，然后调用 `probe_url(url)`。`probe_url(url)` 会用 `urlopen()` 真正访问网站；如果访问成功，就返回状态码；如果是 404 这种 `HTTPError`，也不会直接报错退出，而是把状态码返回给 `main()`。`main()` 拿到状态码后，再判断 200 到 399 输出 `OK`，其他状态码输出 `WARN`。如果请求过程中出现超时、SSL 证书校验失败或其他请求错误，就进入异常处理，输出对应的 `FAIL` 信息，并直接结束程序。
