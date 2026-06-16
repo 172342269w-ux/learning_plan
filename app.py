@@ -1,0 +1,41 @@
+from fastapi import FastAPI
+
+
+app = FastAPI(title="lenxuan-monitor")
+
+
+@app.get("/")
+def read_root() -> dict[str, str]:
+    return {"message": "lenxuan-monitor API is running"}
+
+
+
+def probe_url(url:str)->int:
+    import urllib.request
+    import urllib.error
+    try:
+        response = urllib.request.urlopen(url, timeout=5)
+        return response.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
+ 
+
+@app.get("/health")
+def read_health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+@app.get("/probe")
+def read_probe(url:str)->dict[str,object]:
+    status_code=probe_url(url)
+    if 200<=status_code<400:
+        return {
+            "url":url,
+            "status_code":status_code,
+            "result":"ok"}
+    return{
+        "url":url,
+        "status_code":status_code,
+        "result":"warn"
+    }
+

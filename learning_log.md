@@ -187,3 +187,21 @@ Notes:
 - What I tried: 我重新运行了 `site_probe.py`，分别测试了 `http://example.com`、`http://example.com/does-not-exist`、`https://example.com` 和 `http://no-such-host.invalid`，然后根据输出补上了 timeout 和 SSL verify error 的异常处理。
 - What failed: 一开始访问 `http://no-such-host.invalid` 会直接出现 traceback，因为 `TimeoutError` 没有被单独处理。访问 `https://example.com` 时也会因为证书校验失败报错。
 - What I understood after fixing it: `main()` 先检查命令行参数个数是不是 2，也就是脚本名加 1 个 URL。如果不是，就输出正确用法并结束。参数正确时，把 `sys.argv[1]` 赋值给 `url`，然后调用 `probe_url(url)`。`probe_url(url)` 会用 `urlopen()` 真正访问网站；如果访问成功，就返回状态码；如果是 404 这种 `HTTPError`，也不会直接报错退出，而是把状态码返回给 `main()`。`main()` 拿到状态码后，再判断 200 到 399 输出 `OK`，其他状态码输出 `WARN`。如果请求过程中出现超时、SSL 证书校验失败或其他请求错误，就进入异常处理，输出对应的 `FAIL` 信息，并直接结束程序。
+
+## 2026-06-17
+
+Stage: First FastAPI API practice.
+
+Today's target:
+
+- [x] Create the first FastAPI app entry.
+- [x] Add `/` and `/health` routes.
+- [x] Install FastAPI and Uvicorn in a local `.venv`.
+- [x] Reuse `probe_url(url)` inside a `/probe` route.
+- [x] Return JSON for both `200` and `404` cases.
+
+Notes:
+
+- What I tried: 我先创建了 `app.py` 和 `requirements.txt`，再在本地 `.venv` 里安装 FastAPI、Pydantic 和 Uvicorn。然后我把 `site_probe.py` 里的 `probe_url(url)` 逻辑搬到 `app.py`，写了 `/probe` 路由，并测试了 `http://example.com` 和 `http://example.com/does-not-exist`。
+- What failed: 一开始我把命令行脚本的 `sys.argv` 写法直接放进了 `app.py` 顶层，导致 FastAPI 导入文件时就报错。后面我还把返回字段名写错过，也遇到过旧进程没有重启、浏览器结果和文件内容对不上的情况。
+- What I understood after fixing it: 命令行脚本是启动后立刻往下执行，所以会用 `sys.argv` 和 `print()`；FastAPI 则是在收到请求后才进入路由函数，所以要用函数参数接收 `url`，再用 `return` 返回字典，让 FastAPI 自动变成 JSON。现在 `/probe` 已经能返回 `url`、`status_code` 和 `result`，并正确区分 `200` 的 `ok` 和 `404` 的 `warn`。
