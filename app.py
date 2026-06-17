@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 
+import urllib.request
+import urllib.error
+import ssl
+
 
 app = FastAPI(title="lenxuan-monitor")
 
@@ -11,8 +15,7 @@ def read_root() -> dict[str, str]:
 
 
 def probe_url(url:str)->int:
-    import urllib.request
-    import urllib.error
+    
     try:
         response = urllib.request.urlopen(url, timeout=5)
         return response.status
@@ -27,15 +30,34 @@ def read_health() -> dict[str, str]:
 
 @app.get("/probe")
 def read_probe(url:str)->dict[str,object]:
-    status_code=probe_url(url)
-    if 200<=status_code<400:
+    try:
+     status_code=probe_url(url)
+    except TimeoutError:
         return {
             "url":url,
-            "status_code":status_code,
-            "result":"ok"}
+            "status_code":408,
+            "result":"timeout"
+        }
+    except urllib.error.URLError as exc:
+        if isinstance(exc.reason, ssl.SSLCertVerificationError):
+            return {
+                "url":url,
+                "status_code":400,
+                "result":"ssl certificate verification error"
+            }
+        return {
+            "url":url,
+            "status_code":400,
+            "result":"request error"
+        }
+    if 200<=status_code<400:
+         return {
+         "url":url,
+         "status_code":status_code,
+         "result":"ok"}
     return{
         "url":url,
         "status_code":status_code,
         "result":"warn"
-    }
+     }
 

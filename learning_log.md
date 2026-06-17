@@ -205,3 +205,21 @@ Notes:
 - What I tried: 我先创建了 `app.py` 和 `requirements.txt`，再在本地 `.venv` 里安装 FastAPI、Pydantic 和 Uvicorn。然后我把 `site_probe.py` 里的 `probe_url(url)` 逻辑搬到 `app.py`，写了 `/probe` 路由，并测试了 `http://example.com` 和 `http://example.com/does-not-exist`。
 - What failed: 一开始我把命令行脚本的 `sys.argv` 写法直接放进了 `app.py` 顶层，导致 FastAPI 导入文件时就报错。后面我还把返回字段名写错过，也遇到过旧进程没有重启、浏览器结果和文件内容对不上的情况。
 - What I understood after fixing it: 命令行脚本是启动后立刻往下执行，所以会用 `sys.argv` 和 `print()`；FastAPI 则是在收到请求后才进入路由函数，所以要用函数参数接收 `url`，再用 `return` 返回字典，让 FastAPI 自动变成 JSON。现在 `/probe` 已经能返回 `url`、`status_code` 和 `result`，并正确区分 `200` 的 `ok` 和 `404` 的 `warn`。
+
+## 2026-06-18
+
+Stage: `/probe` exception handling in FastAPI.
+
+Today's target:
+
+- [x] Re-test `/probe` with `200`, `404`, HTTPS SSL error, and timeout cases.
+- [x] Add timeout handling in the FastAPI route.
+- [x] Add SSL certificate verification error handling in the FastAPI route.
+- [x] Return JSON errors instead of `500 Internal Server Error`.
+- [x] Explain the difference between CLI `print()` output and API `return` JSON.
+
+Notes:
+
+- What I tried: 我继续修改了 `app.py` 里的 `/probe` 路由，测试了 `http://example.com`、`http://example.com/does-not-exist`、`https://example.com` 和 `http://no-such-host.invalid`。我把 `site_probe.py` 里学过的超时和 SSL 错误处理思路迁到了 FastAPI 路由里。
+- What failed: 一开始 `/probe` 遇到 HTTPS 证书错误和无效主机时会直接变成 `500`。中间我还漏过 `urllib.error` 的导入，也试过把 `exc.reason` 直接原样返回，结果不够稳定、不够清楚。
+- What I understood after fixing it: CLI 脚本里异常可以用 `print()` 告诉终端发生了什么，但 FastAPI 路由里不能让异常直接冒出去，否则浏览器只会看到 `500`。现在 `/probe` 会自己接住异常，再 `return` 一个 JSON 结果：正常请求返回 `ok` 或 `warn`，HTTPS 证书校验失败返回 `ssl certificate verification error`，超时返回 `timeout`。这样 API 调用方就能稳定拿到结构化结果，而不是只看到报错页面。
