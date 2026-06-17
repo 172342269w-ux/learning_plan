@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 
+from scripts.cert_days_left import get_cert_expiry, days_until
+import socket
+
 import urllib.request
 import urllib.error
 import ssl
@@ -47,7 +50,7 @@ def read_probe(url:str)->dict[str,object]:
             }
         return {
             "url":url,
-            "status_code":400,
+            "status_code":404,
             "result":"request error"
         }
     if 200<=status_code<400:
@@ -61,3 +64,20 @@ def read_probe(url:str)->dict[str,object]:
         "result":"warn"
      }
 
+@app.get("/cert")
+def read_cert(hostname: str) -> dict[str, object]:
+    try:
+        expiry=get_cert_expiry(hostname)
+        days_left=days_until(expiry)
+        return {
+            "hostname": hostname,
+            "expires_at": expiry.strftime("%Y-%m-%d %H:%M:%S"),
+            "days_left":days_left,
+            "result":"ok"
+        }
+    except (socket.error, ssl.SSLError)as exc:
+        return {
+            "hostname":hostname,
+            "result":"tls_error",
+            "error":str(exc)
+        }

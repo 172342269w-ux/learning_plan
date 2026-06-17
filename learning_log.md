@@ -223,3 +223,21 @@ Notes:
 - What I tried: 我继续修改了 `app.py` 里的 `/probe` 路由，测试了 `http://example.com`、`http://example.com/does-not-exist`、`https://example.com` 和 `http://no-such-host.invalid`。我把 `site_probe.py` 里学过的超时和 SSL 错误处理思路迁到了 FastAPI 路由里。
 - What failed: 一开始 `/probe` 遇到 HTTPS 证书错误和无效主机时会直接变成 `500`。中间我还漏过 `urllib.error` 的导入，也试过把 `exc.reason` 直接原样返回，结果不够稳定、不够清楚。
 - What I understood after fixing it: CLI 脚本里异常可以用 `print()` 告诉终端发生了什么，但 FastAPI 路由里不能让异常直接冒出去，否则浏览器只会看到 `500`。现在 `/probe` 会自己接住异常，再 `return` 一个 JSON 结果：正常请求返回 `ok` 或 `warn`，HTTPS 证书校验失败返回 `ssl certificate verification error`，超时返回 `timeout`。这样 API 调用方就能稳定拿到结构化结果，而不是只看到报错页面。
+
+## 2026-06-18
+
+Stage: First `/cert` route in FastAPI.
+
+Today's target:
+
+- [x] Reuse `get_cert_expiry()` and `days_until()` inside `app.py`.
+- [x] Add a `/cert` route that accepts `hostname`.
+- [x] Return certificate expiry information as JSON.
+- [x] Return a JSON error instead of crashing when TLS lookup fails.
+- [x] Verify both a real hostname and an invalid hostname.
+
+Notes:
+
+- What I tried: 我在 `app.py` 顶部导入了 `get_cert_expiry` 和 `days_until`，然后新增了 `/cert` 路由，测试了 `example.com` 和 `no-such-host.invalid`。成功时我返回 `hostname`、`expires_at`、`days_left` 和 `result`，失败时返回 `tls_error` 和错误信息。
+- What failed: 一开始我把 `ssl` 手误写成了 `sll`，还把字段名写成过 `expiry_at` 和 `adays_left`，所以错误分支没有正确接住，返回字段名也不统一。
+- What I understood after fixing it: 这次我不需要重新手写证书计算逻辑，只要把 CLI 脚本里已经写好的函数复用到 FastAPI 路由里就行。API 路由的重点是把函数结果整理成 JSON 返回；如果查询失败，也要返回结构化错误，而不是让异常直接冒出去。
