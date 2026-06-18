@@ -241,3 +241,20 @@ Notes:
 - What I tried: 我在 `app.py` 顶部导入了 `get_cert_expiry` 和 `days_until`，然后新增了 `/cert` 路由，测试了 `example.com` 和 `no-such-host.invalid`。成功时我返回 `hostname`、`expires_at`、`days_left` 和 `result`，失败时返回 `tls_error` 和错误信息。
 - What failed: 一开始我把 `ssl` 手误写成了 `sll`，还把字段名写成过 `expiry_at` 和 `adays_left`，所以错误分支没有正确接住，返回字段名也不统一。
 - What I understood after fixing it: 这次我不需要重新手写证书计算逻辑，只要把 CLI 脚本里已经写好的函数复用到 FastAPI 路由里就行。API 路由的重点是把函数结果整理成 JSON 返回；如果查询失败，也要返回结构化错误，而不是让异常直接冒出去。
+
+## 2026-06-18
+
+Stage: FastAPI `response_model` and `BaseModel`.
+
+Today's target:
+
+- [x] Add clear response models for `/`, `/health`, `/probe`, and `/cert`.
+- [x] Make Swagger show fixed fields instead of a generic dictionary shape.
+- [x] Understand what `BaseModel` does.
+- [x] Understand what `response_model` does.
+
+Notes:
+
+- What I tried: 我在 `app.py` 里新增了 `RootResponse`、`HealthResponse`、`ProbeResponse` 和 `CertResponse`，然后把它们分别挂到对应路由的 `response_model` 上。
+- What failed: 之前没有响应模型时，Swagger 只能把返回值显示成很模糊的通用字典，看起来像 `additionalProp1` 这种结构，不方便我看清接口到底应该返回什么字段。
+- What I understood after fixing it: `BaseModel` 就像先把“返回数据的字段表”写出来，比如 `/probe` 必须有 `url`、`status_code` 和 `result`。`response_model` 则是把这张字段表绑定到具体路由上，告诉 FastAPI 这个接口应该按这个结构返回，也让 Swagger 文档显示得更清楚。这样我不只是“接口能跑”，而是连接口长什么样也固定下来了。

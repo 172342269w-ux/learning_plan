@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 from scripts.cert_days_left import get_cert_expiry, days_until
 import socket
@@ -11,8 +12,30 @@ import ssl
 app = FastAPI(title="lenxuan-monitor")
 
 
-@app.get("/")
-def read_root() -> dict[str, str]:
+class RootResponse(BaseModel):
+    message: str
+
+
+class HealthResponse(BaseModel):
+    status: str
+
+
+class ProbeResponse(BaseModel):
+    url: str
+    status_code: int
+    result: str
+
+
+class CertResponse(BaseModel):
+    hostname: str
+    result: str
+    expires_at: str | None = None
+    days_left: int | None = None
+    error: str | None = None
+
+
+@app.get("/", response_model=RootResponse)
+def read_root() -> RootResponse:
     return {"message": "lenxuan-monitor API is running"}
 
 
@@ -26,13 +49,13 @@ def probe_url(url:str)->int:
         return exc.code
  
 
-@app.get("/health")
-def read_health() -> dict[str, str]:
+@app.get("/health", response_model=HealthResponse)
+def read_health() -> HealthResponse:
     return {"status": "ok"}
 
 
-@app.get("/probe")
-def read_probe(url:str)->dict[str,object]:
+@app.get("/probe", response_model=ProbeResponse)
+def read_probe(url:str)->ProbeResponse:
     try:
      status_code=probe_url(url)
     except TimeoutError:
@@ -64,8 +87,8 @@ def read_probe(url:str)->dict[str,object]:
         "result":"warn"
      }
 
-@app.get("/cert")
-def read_cert(hostname: str) -> dict[str, object]:
+@app.get("/cert", response_model=CertResponse)
+def read_cert(hostname: str) -> CertResponse:
     try:
         expiry=get_cert_expiry(hostname)
         days_left=days_until(expiry)
