@@ -258,3 +258,19 @@ Notes:
 - What I tried: 我在 `app.py` 里新增了 `RootResponse`、`HealthResponse`、`ProbeResponse` 和 `CertResponse`，然后把它们分别挂到对应路由的 `response_model` 上。
 - What failed: 之前没有响应模型时，Swagger 只能把返回值显示成很模糊的通用字典，看起来像 `additionalProp1` 这种结构，不方便我看清接口到底应该返回什么字段。
 - What I understood after fixing it: `BaseModel` 就像先把“返回数据的字段表”写出来，比如 `/probe` 必须有 `url`、`status_code` 和 `result`。`response_model` 则是把这张字段表绑定到具体路由上，告诉 FastAPI 这个接口应该按这个结构返回，也让 Swagger 文档显示得更清楚。这样我不只是“接口能跑”，而是连接口长什么样也固定下来了。
+
+## 2026-06-18
+
+Stage: Reuse existing probe logic in FastAPI.
+
+Today's target:
+
+- [x] Import `probe_url()` from `scripts/site_probe.py` instead of keeping a copied version in `app.py`.
+- [x] Keep `/probe` behavior consistent after switching to the shared function.
+- [x] Clean up `app.py` formatting and spacing.
+
+Notes:
+
+- What I tried: 我先尝试把 `probe_url()` 复用到 `app.py` 里，后来发现一开始导错了来源文件，随后改成从 `scripts/site_probe.py` 正确导入。最后我顺手把 `app.py` 的空行、缩进和空格也整理了一遍。
+- What failed: 最开始我把 `probe_url` 误从 `cert_days_left.py` 里导入，导致 `app.py` 直接 `ImportError`，接口都起不来。
+- What I understood after fixing it: 已经写好的核心逻辑，优先应该复用，而不是在另一个文件里再抄一遍。这样后面如果我要改 `probe_url()` 的行为，只改一处就能同时影响 CLI 和 FastAPI，两边不会越来越不一致。整理格式虽然不改变功能，但会让我以后更容易读懂和维护自己的代码。
