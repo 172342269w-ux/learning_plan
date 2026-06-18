@@ -274,3 +274,21 @@ Notes:
 - What I tried: 我先尝试把 `probe_url()` 复用到 `app.py` 里，后来发现一开始导错了来源文件，随后改成从 `scripts/site_probe.py` 正确导入。最后我顺手把 `app.py` 的空行、缩进和空格也整理了一遍。
 - What failed: 最开始我把 `probe_url` 误从 `cert_days_left.py` 里导入，导致 `app.py` 直接 `ImportError`，接口都起不来。
 - What I understood after fixing it: 已经写好的核心逻辑，优先应该复用，而不是在另一个文件里再抄一遍。这样后面如果我要改 `probe_url()` 的行为，只改一处就能同时影响 CLI 和 FastAPI，两边不会越来越不一致。整理格式虽然不改变功能，但会让我以后更容易读懂和维护自己的代码。
+
+## 2026-06-19
+
+Stage: Swagger documentation polish.
+
+Today's target:
+
+- [x] Add API-level description and version information.
+- [x] Add route summaries and descriptions.
+- [x] Add query parameter descriptions and examples.
+- [x] Add field descriptions to response models.
+- [x] Make the `/docs` page look closer to a real API document.
+
+Notes:
+
+- What I tried: 我在 `app.py` 的 `FastAPI(...)` 里补了 `description` 和 `version`，又给 `/`、`/health`、`/probe`、`/cert` 加了 `summary` 和 `description`。同时我把 `url`、`hostname` 参数改成了 `Query(...)`，也给响应模型字段补了 `Field(description=...)`。
+- What failed: 之前虽然接口能跑，但 Swagger 页面只显示默认标题和很基础的信息，参数和字段的含义不够清楚，看起来还不像一个认真整理过的 API。
+- What I understood after fixing it: Swagger 文档不是“自动就够用了”，而是可以通过 `FastAPI(...)`、`summary`、`description`、`Query(...)` 和 `Field(...)` 主动把接口说明写清楚。这样别人打开 `/docs`，不只知道能不能调用，还能更快明白每个接口和字段是什么意思。
