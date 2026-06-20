@@ -50,8 +50,8 @@
 
 - 已经不是完全不会 Python
 - 已经能把 CLI 小工具的核心逻辑接到 FastAPI 里
-- 已经开始理解接口文档、响应模型和内存版数据管理
-- 还没有进入数据库持久化，监控目标目前只保存在内存里
+- 已经开始理解接口文档、响应模型和 SQLite 持久化
+- 监控目标现在可以保存在本地 SQLite 文件里，但还没有历史结果表
 
 ## 现在怎么开始
 
@@ -118,20 +118,23 @@ python .\scripts\cert_days_left.py example.com
 
 ## 当前 API 进度
 
-当前 API 还是学习版、内存版，但已经具备这几种能力：
+当前 API 还是学习版、最小可用版，但已经具备这几种能力：
 
 - `GET /probe`：检查单个 URL 的状态
 - `GET /cert`：检查单个主机证书到期时间
-- `GET /targets`：查看当前内存里的监控目标
-- `POST /targets`：新增一个内存版监控目标
+- `GET /targets`：查看当前 SQLite 里的监控目标
+- `POST /targets`：新增一个 SQLite 版监控目标
 - `GET /targets/check`：遍历当前所有目标并逐个探测
 
 目前还没有：
 
-- SQLite 持久化
 - 自动定时任务
 - 前端页面
 - 统一的历史结果存储
+
+当前数据文件：
+
+- `monitor.db`：本地 SQLite 数据库文件，用来保存监控目标
 
 ## 副线
 

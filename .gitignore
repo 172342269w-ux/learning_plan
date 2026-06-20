@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 .env
+monitor.db
 草稿箱/
 .vscode/
 .claude/

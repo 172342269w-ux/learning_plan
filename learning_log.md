@@ -310,3 +310,21 @@ Notes:
 - What I tried: 我先在 `README.md` 里补了当前 FastAPI 进度和运行方式，然后在 `app.py` 里新增了 `TargetCheckResult`、`TargetCheckListResponse` 和 `GET /targets/check`。这个新接口会遍历 `targets_db`，再复用现有的 `/probe` 逻辑给每个目标生成结果。
 - What failed: 一开始浏览器里看到 `404`，主要是因为本地运行的服务还是旧代码，没有重新加载到新增的 `/targets` 路由，不是路由设计本身有问题。
 - What I understood after fixing it: 真实项目里不能只会检查一个网址，还要先管理“有哪些目标需要检查”。这次的重点不是数据库，而是先把“目标列表 -> 逐个检查 -> 返回批量结果”这条最小主线接起来。这样下一步再换成 SQLite 时，我只是在替换存储层，而不是重新想一遍接口流程。
+
+## 2026-06-20
+
+Stage: Replace in-memory targets with SQLite.
+
+Today's target:
+
+- [x] Create a local SQLite database file for monitoring targets.
+- [x] Add a `targets` table with fields matching the current `Target` model.
+- [x] Replace `targets_db` reads with SQLite queries.
+- [x] Replace `targets_db` writes with SQLite inserts.
+- [x] Keep `GET /targets`, `POST /targets`, and `GET /targets/check` working after the storage swap.
+
+Notes:
+
+- What I tried: 我在 `app.py` 里加入了 `sqlite3` 和 `monitor.db`，再写了 `init_db()`、`get_db_connection()`、`fetch_targets()`、`insert_target()` 这些最小数据库函数。然后我把 `/targets`、`POST /targets` 和 `/targets/check` 都改成通过 SQLite 读写，而不是再使用内存列表。
+- What failed: 这一轮没有逻辑性大报错，主要是要特别注意不要把测试数据永久留在数据库里，所以验证时我用了临时目标并做了清理。
+- What I understood after fixing it: 这次真正学到的是“接口不用变，只替换存储层”。API 路由本身还是同样的 `/targets` 和 `/targets/check`，但底层已经从 Python 列表换成了 SQLite。这样服务重启后目标也能保留下来，项目就更像真正的后端，而不是一次性内存练习。

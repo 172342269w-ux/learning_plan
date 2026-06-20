@@ -1,6 +1,8 @@
 import socket
+import sqlite3
 import urllib.error
 import ssl
+from pathlib import Path
 
 from fastapi import FastAPI, Query
 from pydantic import BaseModel, Field
@@ -14,6 +16,8 @@ app = FastAPI(
     description="Small monitoring practice API with HTTP probe and TLS certificate lookup.",
     version="0.1.0",
 )
+
+DB_PATH = Path(__file__).with_name("monitor.db")
 
 
 class RootResponse(BaseModel):
@@ -46,7 +50,7 @@ class Target(BaseModel):
 
 
 class TargetListResponse(BaseModel):
-    count: int = Field(description="Number of targets currently stored in memory.")
+    count: int = Field(description="Number of targets currently stored in SQLite.")
     targets: list[Target] = Field(description="Current monitoring targets.")
 
 
@@ -64,7 +68,63 @@ class TargetCheckListResponse(BaseModel):
     results: list[TargetCheckResult] = Field(description="Batch check results for all current targets.")
 
 
-targets_db: list[Target] = []
+def get_db_connection() -> sqlite3.Connection:
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+
+def init_db() -> None:
+    with get_db_connection() as connection:
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS targets (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                url TEXT NOT NULL,
+                check_ssl INTEGER NOT NULL,
+                interval_minutes INTEGER NOT NULL
+            )
+            """
+        )
+        connection.commit()
+
+
+def row_to_target(row: sqlite3.Row) -> Target:
+    return Target(
+        name=row["name"],
+        url=row["url"],
+        check_ssl=bool(row["check_ssl"]),
+        interval_minutes=row["interval_minutes"],
+    )
+
+
+def fetch_targets() -> list[Target]:
+    with get_db_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT name, url, check_ssl, interval_minutes
+            FROM targets
+            ORDER BY id
+            """
+        ).fetchall()
+    return [row_to_target(row) for row in rows]
+
+
+def insert_target(target: Target) -> Target:
+    with get_db_connection() as connection:
+        connection.execute(
+            """
+            INSERT INTO targets (name, url, check_ssl, interval_minutes)
+            VALUES (?, ?, ?, ?)
+            """,
+            (target.name, target.url, int(target.check_ssl), target.interval_minutes),
+        )
+        connection.commit()
+    return target
+
+
+init_db()
 
 
 @app.get(
@@ -90,12 +150,13 @@ def read_health() -> HealthResponse:
     "/targets",
     response_model=TargetListResponse,
     summary="List Targets",
-    description="Return the current in-memory monitoring targets.",
+    description="Return the current monitoring targets stored in SQLite.",
 )
 def read_targets() -> TargetListResponse:
+    targets = fetch_targets()
     return {
-        "count": len(targets_db),
-        "targets": targets_db,
+        "count": len(targets),
+        "targets": targets,
     }
 
 
@@ -103,23 +164,22 @@ def read_targets() -> TargetListResponse:
     "/targets",
     response_model=Target,
     summary="Create Target",
-    description="Add one monitoring target to the in-memory target list.",
+    description="Add one monitoring target to SQLite storage.",
 )
 def create_target(target: Target) -> Target:
-    targets_db.append(target)
-    return target
+    return insert_target(target)
 
 
 @app.get(
     "/targets/check",
     response_model=TargetCheckListResponse,
     summary="Check All Targets",
-    description="Run the current probe logic against every in-memory target and return a batch result.",
+    description="Run the current probe logic against every stored target and return a batch result.",
 )
 def check_targets() -> TargetCheckListResponse:
     results: list[TargetCheckResult] = []
 
-    for target in targets_db:
+    for target in fetch_targets():
         probe_result = read_probe(target.url)
         results.append(
             {
