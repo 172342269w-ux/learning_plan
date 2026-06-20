@@ -29,20 +29,29 @@
 
 ## 当前状态
 
-截至 2026-06-15：
+截至 2026-06-20：
 
-- Week 1 主题：Python 入门 + Git 习惯
-- 当前重点：先把小脚本练到能看懂、能修改、能重新搭起来
+- Week 1 已完成：Python 入门、Git 基本工作流、两个真实 CLI 小工具
+- 当前重点：把 CLI 小工具一步步接成 FastAPI 接口，并保持文档和日志同步
 - 已完成的真实小工具练习：
   - `scripts/site_probe.py`
   - `scripts/cert_days_left.py`
   - `scripts/cert_days_left_rebuild.py`
+- 已完成的 FastAPI 接口练习：
+  - `GET /`
+  - `GET /health`
+  - `GET /probe`
+  - `GET /cert`
+  - `GET /targets`
+  - `POST /targets`
+  - `GET /targets/check`
 
 当前判断：
 
 - 已经不是完全不会 Python
-- 已经能在提示下完成真实小工具
-- 还需要继续练“自己重搭”和“看到报错先定位问题”
+- 已经能把 CLI 小工具的核心逻辑接到 FastAPI 里
+- 已经开始理解接口文档、响应模型和内存版数据管理
+- 还没有进入数据库持久化，监控目标目前只保存在内存里
 
 ## 现在怎么开始
 
@@ -66,6 +75,18 @@ python .\scripts\site_probe.py https://example.com
 python .\scripts\cert_days_left.py example.com
 ```
 
+如果要运行当前 FastAPI 练习，可以使用：
+
+```powershell
+.\.venv\bin\python.exe -m uvicorn app:app --host 127.0.0.1 --port 8000 --reload
+```
+
+启动后可以打开：
+
+- `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:8000/probe?url=http://example.com`
+- `http://127.0.0.1:8000/cert?hostname=example.com`
+
 ## 仓库结构
 
 - `docs/roadmap-2026-2027.md`：2026-2027 总路线
@@ -74,6 +95,8 @@ python .\scripts\cert_days_left.py example.com
 - `docs/github-upload.md`：固定 GitHub 上传流程
 - `learning_log.md`：每日学习记录
 - `scripts/`：每天练习脚本和小工具
+- `app.py`：当前 FastAPI 练习入口
+- `requirements.txt`：FastAPI 练习依赖
 - `数据结构/`：C++ 数据结构副线资料
 
 ## 当前主线
@@ -92,6 +115,23 @@ python .\scripts\cert_days_left.py example.com
 第一个真实项目方向：
 
 > `lenxuan-monitor`：服务器监控 + HTTPS 证书到期提醒面板
+
+## 当前 API 进度
+
+当前 API 还是学习版、内存版，但已经具备这几种能力：
+
+- `GET /probe`：检查单个 URL 的状态
+- `GET /cert`：检查单个主机证书到期时间
+- `GET /targets`：查看当前内存里的监控目标
+- `POST /targets`：新增一个内存版监控目标
+- `GET /targets/check`：遍历当前所有目标并逐个探测
+
+目前还没有：
+
+- SQLite 持久化
+- 自动定时任务
+- 前端页面
+- 统一的历史结果存储
 
 ## 副线
 

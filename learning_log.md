@@ -292,3 +292,21 @@ Notes:
 - What I tried: 我在 `app.py` 的 `FastAPI(...)` 里补了 `description` 和 `version`，又给 `/`、`/health`、`/probe`、`/cert` 加了 `summary` 和 `description`。同时我把 `url`、`hostname` 参数改成了 `Query(...)`，也给响应模型字段补了 `Field(description=...)`。
 - What failed: 之前虽然接口能跑，但 Swagger 页面只显示默认标题和很基础的信息，参数和字段的含义不够清楚，看起来还不像一个认真整理过的 API。
 - What I understood after fixing it: Swagger 文档不是“自动就够用了”，而是可以通过 `FastAPI(...)`、`summary`、`description`、`Query(...)` 和 `Field(...)` 主动把接口说明写清楚。这样别人打开 `/docs`，不只知道能不能调用，还能更快明白每个接口和字段是什么意思。
+
+## 2026-06-20
+
+Stage: In-memory target management and batch check.
+
+Today's target:
+
+- [x] Keep the in-memory `targets_db` structure as the current storage layer.
+- [x] Confirm `GET /targets` and `POST /targets` are part of the current API.
+- [x] Add `GET /targets/check` to loop through all stored targets.
+- [x] Reuse the existing `/probe` logic for each target instead of writing a second probe flow.
+- [x] Update `README.md` so the repo description matches the current real progress.
+
+Notes:
+
+- What I tried: 我先在 `README.md` 里补了当前 FastAPI 进度和运行方式，然后在 `app.py` 里新增了 `TargetCheckResult`、`TargetCheckListResponse` 和 `GET /targets/check`。这个新接口会遍历 `targets_db`，再复用现有的 `/probe` 逻辑给每个目标生成结果。
+- What failed: 一开始浏览器里看到 `404`，主要是因为本地运行的服务还是旧代码，没有重新加载到新增的 `/targets` 路由，不是路由设计本身有问题。
+- What I understood after fixing it: 真实项目里不能只会检查一个网址，还要先管理“有哪些目标需要检查”。这次的重点不是数据库，而是先把“目标列表 -> 逐个检查 -> 返回批量结果”这条最小主线接起来。这样下一步再换成 SQLite 时，我只是在替换存储层，而不是重新想一遍接口流程。

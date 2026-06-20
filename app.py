@@ -38,6 +38,35 @@ class CertResponse(BaseModel):
     error: str | None = Field(default=None, description="Error text when lookup fails.")
 
 
+class Target(BaseModel):
+    name: str = Field(description="Short name for the monitoring target.")
+    url: str = Field(description="Full target URL, such as http://example.com.", examples=["http://example.com"])
+    check_ssl: bool = Field(description="Whether this target should later use certificate checking.", examples=[True])
+    interval_minutes: int = Field(description="Planned check interval in minutes.", examples=[5])
+
+
+class TargetListResponse(BaseModel):
+    count: int = Field(description="Number of targets currently stored in memory.")
+    targets: list[Target] = Field(description="Current monitoring targets.")
+
+
+class TargetCheckResult(BaseModel):
+    name: str = Field(description="Short name for the monitoring target.")
+    url: str = Field(description="The target URL that was checked.")
+    check_ssl: bool = Field(description="Whether this target is marked for certificate checking.")
+    interval_minutes: int = Field(description="Planned check interval in minutes.")
+    status_code: int = Field(description="HTTP-like result code for this target check.")
+    result: str = Field(description="High-level check result.", examples=["ok", "warn", "timeout"])
+
+
+class TargetCheckListResponse(BaseModel):
+    count: int = Field(description="Number of targets checked in this batch.")
+    results: list[TargetCheckResult] = Field(description="Batch check results for all current targets.")
+
+
+targets_db: list[Target] = []
+
+
 @app.get(
     "/",
     response_model=RootResponse,
@@ -55,6 +84,58 @@ def read_root() -> RootResponse:
 )
 def read_health() -> HealthResponse:
     return {"status": "ok"}
+
+
+@app.get(
+    "/targets",
+    response_model=TargetListResponse,
+    summary="List Targets",
+    description="Return the current in-memory monitoring targets.",
+)
+def read_targets() -> TargetListResponse:
+    return {
+        "count": len(targets_db),
+        "targets": targets_db,
+    }
+
+
+@app.post(
+    "/targets",
+    response_model=Target,
+    summary="Create Target",
+    description="Add one monitoring target to the in-memory target list.",
+)
+def create_target(target: Target) -> Target:
+    targets_db.append(target)
+    return target
+
+
+@app.get(
+    "/targets/check",
+    response_model=TargetCheckListResponse,
+    summary="Check All Targets",
+    description="Run the current probe logic against every in-memory target and return a batch result.",
+)
+def check_targets() -> TargetCheckListResponse:
+    results: list[TargetCheckResult] = []
+
+    for target in targets_db:
+        probe_result = read_probe(target.url)
+        results.append(
+            {
+                "name": target.name,
+                "url": target.url,
+                "check_ssl": target.check_ssl,
+                "interval_minutes": target.interval_minutes,
+                "status_code": probe_result["status_code"],
+                "result": probe_result["result"],
+            }
+        )
+
+    return {
+        "count": len(results),
+        "results": results,
+    }
 
 
 @app.get(
